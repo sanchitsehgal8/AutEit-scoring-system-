@@ -88,6 +88,16 @@ The scoring service is intentionally modular:
 - Replace scoring logic in `backend/app/services/scoring_engine.py` with your trained PyTorch inference pipeline.
 - Keep output format stable so UI and exports continue to work.
 - Deterministic behavior is preserved in the current implementation for reproducible demos.
+- Optional adapter is already wired:
+	- Set `AUTOEIT_MODEL_PATH` to a local TorchScript (`.pt`) model file.
+	- If model loading fails or no model is provided, backend automatically uses deterministic fallback scoring.
+
+Example:
+
+```bash
+cd backend
+AUTOEIT_MODEL_PATH=/absolute/path/to/autoeit_model.pt /opt/homebrew/bin/python3.11 -m uvicorn app.main:app --reload --port 8000
+```
 
 ## Minimal batch CSV example
 

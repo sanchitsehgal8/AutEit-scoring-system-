@@ -14,9 +14,18 @@ router = APIRouter(prefix="/score", tags=["scoring"])
 engine = AutoEITScoringEngine()
 
 
+@router.get("/status")
+def score_status() -> dict[str, str | bool | None]:
+    return {
+        "model_loaded": engine.model_available,
+        "model_path": engine.model_path,
+        "mode": "model" if engine.model_available else "fallback",
+    }
+
+
 @router.post("", response_model=ScoreResponse)
 def score_transcription(payload: ScoreRequest) -> ScoreResponse:
-    return engine.score(payload.transcription, payload.human_score)
+    return engine.score(payload.transcription, payload.human_score, payload.stimulus)
 
 
 @router.post("/batch", response_model=BatchScoreResponse)
@@ -38,13 +47,15 @@ async def score_batch(file: UploadFile = File(...)) -> BatchScoreResponse:
     for row in reader:
         sid = str(row.get("sentence_id", "")).strip()
         transcription = str(row.get("transcription", "")).strip()
+        stimulus = str(row.get("stimulus", "")).strip() or None
         if not sid or not transcription:
             continue
-        scored = engine.score(transcription)
+        scored = engine.score(transcription, stimulus=stimulus)
         records.append(
             BatchScoreRecord(
                 sentence_id=sid,
                 transcription=transcription,
+                stimulus=stimulus,
                 score=scored.score,
                 confidence=scored.confidence,
                 rubric_details=scored.model_dump(),
@@ -59,11 +70,12 @@ async def score_batch(file: UploadFile = File(...)) -> BatchScoreResponse:
 def export_batch_csv(payload: ExportRequest) -> Response:
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["sentence_id", "score", "confidence", "rubric_details"])
+    writer.writerow(["sentence_id", "stimulus", "score", "confidence", "rubric_details"])
 
     for record in payload.records:
         writer.writerow([
             record.sentence_id,
+            record.stimulus or "",
             record.score,
             record.confidence,
             json.dumps(record.rubric_details, ensure_ascii=False),

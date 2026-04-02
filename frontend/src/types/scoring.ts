@@ -30,6 +30,7 @@ export type ScoreResponse = {
 export type BatchRecord = {
   sentence_id: string;
   transcription: string;
+  stimulus?: string | null;
   score: number;
   confidence: number;
   rubric_details: Record<string, unknown>;

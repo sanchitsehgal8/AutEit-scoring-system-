@@ -74,11 +74,11 @@ function DashboardPanel({ latestResult, batchRecords }: DashboardPanelProps) {
         <p className="mb-2 text-sm text-slate-300">Score distribution histogram</p>
         <ResponsiveContainer width="100%" height="90%">
           <BarChart data={histogramData}>
-            <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
-            <XAxis dataKey="band" stroke="#94a3b8" />
-            <YAxis stroke="#94a3b8" allowDecimals={false} />
-            <Tooltip cursor={{ fill: '#1e293b' }} />
-            <Bar dataKey="count" fill="#22d3ee" radius={[8, 8, 0, 0]} />
+            <CartesianGrid stroke="#265467" strokeDasharray="3 3" />
+            <XAxis dataKey="band" stroke="#8ebfd3" />
+            <YAxis stroke="#8ebfd3" allowDecimals={false} />
+            <Tooltip cursor={{ fill: '#123847' }} />
+            <Bar dataKey="count" fill="#66b8dc" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

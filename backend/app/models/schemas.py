@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 class ScoreRequest(BaseModel):
     transcription: str = Field(..., min_length=1)
+    stimulus: str | None = None
     human_score: float | None = None
 
 
@@ -42,6 +43,7 @@ class ScoreResponse(BaseModel):
 class BatchScoreRecord(BaseModel):
     sentence_id: str
     transcription: str
+    stimulus: str | None = None
     score: int
     confidence: float
     rubric_details: dict[str, Any]

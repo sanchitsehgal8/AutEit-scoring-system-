@@ -15,6 +15,7 @@ type ScoringPageProps = {
 };
 
 function ScoringPage({ latestResult, batchRecords, onSingleResult, onBatchResult }: ScoringPageProps) {
+  const [stimulus, setStimulus] = useState('');
   const [transcription, setTranscription] = useState('');
   const [humanScore, setHumanScore] = useState('');
   const [isScoring, setIsScoring] = useState(false);
@@ -39,7 +40,7 @@ function ScoringPage({ latestResult, batchRecords, onSingleResult, onBatchResult
     setIsScoring(true);
     try {
       const parsedHuman = humanScore === '' ? undefined : Number(humanScore);
-      const result = await scoreTranscription(transcription, parsedHuman);
+      const result = await scoreTranscription(transcription, parsedHuman, stimulus);
       onSingleResult(result);
       setStatusText('Scoring completed successfully.');
     } catch (error) {
@@ -121,6 +122,16 @@ function ScoringPage({ latestResult, batchRecords, onSingleResult, onBatchResult
         <h2 className="text-xl font-semibold text-cyan-200">Scoring Workflow</h2>
 
         <label className="block text-sm text-slate-300">
+          Stimulus sentence (recommended)
+          <textarea
+            className="mt-2 min-h-20 w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-sm text-slate-100 outline-none ring-cyan-400 transition focus:ring"
+            value={stimulus}
+            onChange={(e) => setStimulus(e.target.value)}
+            placeholder="Enter the original target sentence shown in EIT"
+          />
+        </label>
+
+        <label className="block text-sm text-slate-300">
           Transcription input
           <textarea
             className="mt-2 min-h-24 w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-sm text-slate-100 outline-none ring-cyan-400 transition focus:ring"
@@ -195,6 +206,10 @@ function ScoringPage({ latestResult, batchRecords, onSingleResult, onBatchResult
             {errorText}
           </div>
         ) : null}
+        <p className="text-xs text-slate-400">
+          Tip: include the stimulus sentence for robust scoring. Batch CSV can also include an optional
+          <span className="font-semibold text-slate-300"> stimulus </span>column.
+        </p>
       </section>
 
       {(isScoring || isBatchScoring) && <LoadingSkeleton />}
